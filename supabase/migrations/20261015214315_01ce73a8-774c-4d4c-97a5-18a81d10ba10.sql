@@ -1,0 +1,2 @@
+REVOKE EXECUTE ON FUNCTION public.is_clinic_member(uuid), public.current_clinic_id(), public.set_visit_clinic() FROM PUBLIC, anon;
+REVOKE EXECUTE ON FUNCTION public.set_visit_clinic() FROM authenticated;
