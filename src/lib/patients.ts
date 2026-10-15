@@ -94,7 +94,7 @@ export async function updatePatient(id: string, input: PatientInput) {
   return data as Patient;
 }
 export async function createVisit(patientId: string, input: VisitInput) {
-  const { error } = await supabase.from("visits").insert({ ...input, patient_id: patientId });
+  const { error } = await supabase.from("visits").insert({ ...input, patient_id: patientId } as never);
   if (error) throw error;
 }
 
