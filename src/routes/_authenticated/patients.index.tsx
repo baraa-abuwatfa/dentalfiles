@@ -7,7 +7,7 @@ import { EmptyState, ErrorState, LoadingRows } from "@/components/States";
 import { formatDate, patientsQuery } from "@/lib/patients";
 
 export const Route = createFileRoute("/_authenticated/patients/")({
-  validateSearch: (s: Record<string, unknown>): { q?: string } => ({ q: typeof s.q === "string" && s.q ? s.q : undefined }),
+  validateSearch: (s: Record<string, unknown>): { q?: string } => ({ q: typeof s['q'] === "string" && s['q'] ? s['q'] : undefined }),
   head: () => ({ meta: [{ title: "Patients — DentalFile AI" }, { name: "description", content: "Search and browse patient records." }, { property: "og:title", content: "Patients — DentalFile AI" }, { property: "og:description", content: "Search and browse patient records." }] }),
   component: PatientsPage,
 });
