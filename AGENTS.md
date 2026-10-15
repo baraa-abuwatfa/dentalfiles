@@ -11,4 +11,4 @@
 
 ## Project rules
 - Data access uses the browser Supabase client with RLS; patients/visits are scoped by `clinic_id` via `is_clinic_member()` — never broaden policies to all authenticated users (multi-clinic isolation).
-- Staff accounts are created in the Supabase dashboard and linked via `clinic_members`; there is no public sign-up.
+- Public sign-up exists; a DB trigger on auth.users gives each new account its own private clinic, so new users never gain access to existing clinics. Joining an existing clinic is done manually via `clinic_members`.
