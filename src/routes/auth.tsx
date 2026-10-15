@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,7 +29,7 @@ function AuthPage() {
     setBusy(true); setError("");
     const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     setBusy(false);
-    if (error) return setError(/invalid/i.test(error.message) ? "Incorrect email or password." : error.message);
+    if (error) return setError(/invalid/i.test(error.message) ? "Incorrect email or password." : /not confirmed/i.test(error.message) ? "Please verify your email first — check your inbox for the confirmation link." : error.message);
     navigate({ to: redirect ?? "/dashboard", replace: true });
   }
 
@@ -44,6 +44,7 @@ function AuthPage() {
           <div className="grid gap-2"><Label htmlFor="pw">Password</Label><Input id="pw" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} /></div>
           {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
           <Button type="submit" disabled={busy}>{busy && <Loader2 className="animate-spin" />}Sign in</Button>
+          <p className="text-center text-sm text-muted-foreground">New to DentalFile AI? <Link to="/signup" className="font-medium text-primary hover:underline">Create New Account</Link></p>
         </form>
       </div>
     </div>
