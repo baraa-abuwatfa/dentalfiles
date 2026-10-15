@@ -14,50 +14,109 @@ export type Database = {
   }
   public: {
     Tables: {
+      clinic_members: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_members_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinics: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       patients: {
         Row: {
           allergies: string | null
+          clinic_id: string
           created_at: string
           created_by: string | null
-          date_of_birth: string
+          date_of_birth: string | null
           full_name: string
           id: string
           medical_notes: string | null
-          phone: string
+          phone: string | null
           reference_id: string
           updated_at: string
           xray_url: string | null
         }
         Insert: {
           allergies?: string | null
+          clinic_id?: string
           created_at?: string
           created_by?: string | null
-          date_of_birth: string
+          date_of_birth?: string | null
           full_name: string
           id?: string
           medical_notes?: string | null
-          phone: string
+          phone?: string | null
           reference_id?: string
           updated_at?: string
           xray_url?: string | null
         }
         Update: {
           allergies?: string | null
+          clinic_id?: string
           created_at?: string
           created_by?: string | null
-          date_of_birth?: string
+          date_of_birth?: string | null
           full_name?: string
           id?: string
           medical_notes?: string | null
-          phone?: string
+          phone?: string | null
           reference_id?: string
           updated_at?: string
           xray_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "patients_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       visits: {
         Row: {
+          clinic_id: string
           created_at: string
           created_by: string | null
           dentist_notes: string | null
@@ -69,6 +128,7 @@ export type Database = {
           visit_date: string
         }
         Insert: {
+          clinic_id: string
           created_at?: string
           created_by?: string | null
           dentist_notes?: string | null
@@ -80,6 +140,7 @@ export type Database = {
           visit_date: string
         }
         Update: {
+          clinic_id?: string
           created_at?: string
           created_by?: string | null
           dentist_notes?: string | null
@@ -91,6 +152,13 @@ export type Database = {
           visit_date?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "visits_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "visits_patient_id_fkey"
             columns: ["patient_id"]
@@ -105,7 +173,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_clinic_id: { Args: never; Returns: string }
+      is_clinic_member: { Args: { _clinic: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
