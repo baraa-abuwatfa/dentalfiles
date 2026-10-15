@@ -41,22 +41,40 @@ export const statsQuery = () =>
     },
   });
 
+/** Collapse extra spaces so "  mary   ann " and "mary ann" behave the same. */
+export function normalizeSearch(raw: string) {
+  return raw.replace(/\s+/g, " ").trim();
+}
+
+/**
+ * Builds the server-side filter for a search term.
+ * - "P-1025", "p1025", "p 1025" → exact reference match (P-1025)
+ * - anything else → case-insensitive partial name match; spaces match any whitespace run
+ */
+export function buildSearchFilter(raw: string): { kind: "ref"; value: string } | { kind: "name"; value: string } | null {
+  const s = normalizeSearch(raw);
+  if (!s) return null;
+  const ref = s.match(/^p\s*-?\s*(\d+)$/i);
+  if (ref) return { kind: "ref", value: `P-${ref[1]}` };
+  // Strip characters that have special meaning in LIKE patterns / PostgREST filters.
+  const words = s.replace(/[%_\\,()*"]/g, " ").split(" ").filter(Boolean);
+  if (!words.length) return null;
+  return { kind: "name", value: `%${words.join("%")}%` };
+}
+
 export const patientsQuery = (search: string) =>
   queryOptions({
-    queryKey: ["patients", "list", search],
-    queryFn: async () => {
-      let q = supabase.from("patients").select(COLS).order("created_at", { ascending: false }).limit(200);
-      const s = search.trim();
-      if (s) {
-        const safe = s.replace(/[,%()*\\]/g, " ");
-        q = /^p-\d+$/i.test(s)
-          ? q.eq("reference_id", s.toUpperCase())
-          : q.or(`full_name.ilike.%${safe}%,reference_id.ilike.${safe}`);
-      }
+    queryKey: ["patients", "list", normalizeSearch(search).toLowerCase()],
+    queryFn: async ({ signal }) => {
+      let q = supabase.from("patients").select(COLS).order("created_at", { ascending: false }).limit(200).abortSignal(signal);
+      const f = buildSearchFilter(search);
+      if (f?.kind === "ref") q = q.eq("reference_id", f.value);
+      else if (f?.kind === "name") q = q.ilike("full_name", f.value);
       const { data, error } = await q;
       if (error) throw error;
       return (data ?? []) as Patient[];
     },
+    placeholderData: (prev) => prev,
   });
 
 export const patientQuery = (id: string) =>
