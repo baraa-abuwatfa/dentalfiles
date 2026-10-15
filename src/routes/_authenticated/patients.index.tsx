@@ -14,29 +14,30 @@ export const Route = createFileRoute("/_authenticated/patients/")({
 
 function PatientsPage() {
   const { q = "" } = Route.useSearch();
-  const { data, isLoading, error } = useQuery(patientsQuery(q));
+  const { data, isLoading, isFetching, error } = useQuery(patientsQuery(q));
   return (
     <div className="grid gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div><h1 className="text-3xl font-bold">Patients</h1><p className="text-muted-foreground">{q ? `Results for “${q}”` : "All patient records"}</p></div>
         <Button asChild><Link to="/patients/new"><Plus />Add patient</Link></Button>
       </div>
-      <PatientSearch key={q} initial={q} />
+      <PatientSearch initial={q} live />
+      {isFetching && !isLoading && <p className="-mt-3 text-sm text-muted-foreground" aria-live="polite">Searching…</p>}
       {isLoading ? <LoadingRows /> : error ? <ErrorState error={error} /> : data!.length === 0 ? (
-        <EmptyState title={q ? "No matching patients" : "No patients yet"} />
+        <EmptyState title={q ? `No patients found for “${q}”` : "No patients yet"}>{q && <p className="text-sm text-muted-foreground">Check the spelling, or search by patient ID such as P-1025.</p>}</EmptyState>
       ) : (
         <div className="overflow-hidden rounded-2xl border bg-card shadow-soft">
           <table className="w-full text-sm">
             <thead className="bg-muted text-left text-muted-foreground">
-              <tr><th className="p-3">ID</th><th className="p-3">Name</th><th className="hidden p-3 sm:table-cell">Date of birth</th><th className="hidden p-3 md:table-cell">Phone</th></tr>
+              <tr><th className="p-3">ID</th><th className="p-3">Name</th><th className="p-3">Phone</th><th className="hidden p-3 md:table-cell">Date of birth</th></tr>
             </thead>
             <tbody className="divide-y">
               {data!.map((p) => (
                 <tr key={p.id} className="hover:bg-muted/50">
                   <td className="p-3 font-mono text-xs"><Link to="/patients/$id" params={{ id: p.id }}>{p.reference_id}</Link></td>
                   <td className="p-3 font-medium"><Link to="/patients/$id" params={{ id: p.id }} className="hover:text-primary">{p.full_name}</Link></td>
-                  <td className="hidden p-3 sm:table-cell">{formatDate(p.date_of_birth)}</td>
-                  <td className="hidden p-3 md:table-cell">{p.phone ?? "—"}</td>
+                  <td className="p-3">{p.phone ?? "—"}</td>
+                  <td className="hidden p-3 md:table-cell">{formatDate(p.date_of_birth)}</td>
                 </tr>
               ))}
             </tbody>
