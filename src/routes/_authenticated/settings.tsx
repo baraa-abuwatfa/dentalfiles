@@ -19,7 +19,7 @@ function SettingsPage() {
       <div className="grid gap-3 rounded-2xl border bg-card p-6 shadow-soft">
         <p className="text-sm text-muted-foreground">Signed in as</p><p className="font-medium">{user.email}</p>
         <p className="mt-2 text-sm text-muted-foreground">Clinic</p>
-        <p className="font-medium">{clinics === undefined ? "…" : clinics.length ? clinics.map((c) => c.name).join(", ") : "Not linked to a clinic — ask your administrator."}</p>
+        <p className="font-medium">{clinics === undefined ? "…" : clinics.length ? clinics.map((c: { name: string }) => c.name).join(", ") : "Not linked to a clinic — ask your administrator."}</p>
       </div>
     </div>
   );

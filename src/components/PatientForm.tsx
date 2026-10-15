@@ -26,9 +26,9 @@ export function PatientForm({
     e.preventDefault();
     if (busy) return;
     const errs: Record<string, string> = {};
-    if (!v.full_name.trim()) errs.full_name = "Full name is required.";
-    if (v.date_of_birth && v.date_of_birth > new Date().toISOString().slice(0, 10)) errs.date_of_birth = "Date of birth can't be in the future.";
-    if (v.xray_url.trim() && !isValidUrl(v.xray_url.trim())) errs.xray_url = "Enter a valid link starting with http:// or https://";
+    if (!v.full_name.trim()) errs['full_name'] = "Full name is required.";
+    if (v.date_of_birth && v.date_of_birth > new Date().toISOString().slice(0, 10)) errs['date_of_birth'] = "Date of birth can't be in the future.";
+    if (v.xray_url.trim() && !isValidUrl(v.xray_url.trim())) errs['xray_url'] = "Enter a valid link starting with http:// or https://";
     setErrors(errs);
     if (Object.keys(errs).length) return;
     setBusy(true);

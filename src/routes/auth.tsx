@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import molar from "@/assets/molar.png";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (s: Record<string, unknown>): { redirect?: string } => ({
+  validateSearch: (s: Record<string, unknown>): { redirect?: string | undefined } => ({
     redirect: typeof s['redirect'] === "string" && s['redirect'].startsWith("/") && !s['redirect'].startsWith("//") ? s['redirect'] : undefined,
   }),
   head: () => ({ meta: [{ title: "Sign in — DentalFile AI" }, { name: "description", content: "Staff sign-in for DentalFile AI patient records." }, { property: "og:title", content: "Sign in — DentalFile AI" }, { property: "og:description", content: "Staff sign-in for DentalFile AI patient records." }] }),
